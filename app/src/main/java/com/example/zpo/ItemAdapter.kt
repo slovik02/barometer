@@ -8,9 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ItemAdapter(private val itemList: List<Item>) :
-    RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
-
+class ItemAdapter(private val itemList: List<Item>, private val onItemClick: (Item) -> Unit // Click listener
+) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -18,12 +17,15 @@ class ItemAdapter(private val itemList: List<Item>) :
         return ViewHolder(view)
     }
 
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = itemList[position]
         holder.bind(item)
-    }
 
+        // Set click listener
+        holder.itemView.setOnClickListener {
+            onItemClick(item) // Call function when clicked
+        }
+    }
 
     override fun getItemCount(): Int {
         return itemList.size
@@ -32,7 +34,7 @@ class ItemAdapter(private val itemList: List<Item>) :
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val TitleTextView: TextView = itemView.findViewById(R.id.title)
         private val DescTextView: TextView = itemView.findViewById(R.id.desc)
-        private val IconImageView : ImageView = itemView.findViewById(R.id.Iconimage)
+        private val IconImageView: ImageView = itemView.findViewById(R.id.Iconimage)
 
         fun bind(item: Item) {
             TitleTextView.text = item.title
