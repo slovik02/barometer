@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#8899DE">
+
+    <EditText
+        android:id="@+id/editTextTextNewPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPassword"
+        tools:layout_editor_absoluteX="99dp"
+        tools:layout_editor_absoluteY="285dp" />
+
+    <ImageView
+        android:id="@+id/imageViewRegister"
+        android:layout_width="138dp"
+        android:layout_height="123dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.129"
+        app:srcCompat="@drawable/add" />
+
+    <EditText
+        android:id="@+id/editTextTextEmailNewAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        tools:layout_editor_absoluteX="100dp"
+        tools:layout_editor_absoluteY="226dp" />
+
+    <EditText
+        android:id="@+id/editTextTextRepeatPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPassword"
+        tools:layout_editor_absoluteX="95dp"
+        tools:layout_editor_absoluteY="352dp" />
+
+    <TextView
+        android:id="@+id/textViewHaveAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="74dp"
+        tools:layout_editor_absoluteY="533dp" />
+
+    <Button
+        android:id="@+id/ButtonCreatAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="158dp"
+        tools:layout_editor_absoluteY="444dp" />
+
+    <Button
+        android:id="@+id/buttonBackToLogIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="200dp"
+        tools:layout_editor_absoluteY="522dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>
