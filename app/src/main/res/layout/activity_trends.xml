@@ -9,6 +9,7 @@
     tools:context=".trends">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/today_layout"
         android:layout_width="329dp"
         android:layout_height="263dp"
         android:background="@drawable/item_draw_white"
