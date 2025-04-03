@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "73065101127",
+    "project_id": "barometr-9f3b0",
+    "storage_bucket": "barometr-9f3b0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:73065101127:android:05f0dbe5b4553dc1fcbe62",
+        "android_client_info": {
+          "package_name": "com.example.zpo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYYHIhccVA6jhB5LO9U6mMymJD1-tnDro"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
