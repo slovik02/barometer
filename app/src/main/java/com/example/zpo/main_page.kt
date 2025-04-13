@@ -67,9 +67,15 @@ class main_page : AppCompatActivity(), SensorEventListener {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         val adapter = ItemAdapter(items) { selectedItem ->
-            if (selectedItem.title == "Trends") {
-                val intent = Intent(this, trends::class.java)
-                startActivity(intent)
+            when (selectedItem.title) {
+                "Trends" -> {
+                    val intent = Intent(this, trends::class.java)
+                    startActivity(intent)
+                }
+                "Well-being" -> {
+                    val intent = Intent(this, Survey::class.java)
+                    startActivity(intent)
+                }
             }
         }
 
