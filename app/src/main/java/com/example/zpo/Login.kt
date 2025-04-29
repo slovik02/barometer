@@ -18,9 +18,17 @@ class Login : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.login_layout)
 
         auth = FirebaseAuth.getInstance()
+
+
+        if (auth.currentUser != null) {
+            goToMainPage()
+            finish()
+            return
+        }
+
+        setContentView(R.layout.login_layout)
         initializeViews()
 
         loginButton.setOnClickListener {
@@ -31,6 +39,7 @@ class Login : AppCompatActivity() {
             startActivity(Intent(this, Register::class.java))
         }
     }
+
 
     private fun initializeViews() {
         inputEmail = findViewById(R.id.EditTextEmail)

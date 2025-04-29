@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
 
     <application
         android:allowBackup="true"
@@ -15,11 +17,12 @@
         android:theme="@style/Theme.Zpo"
         tools:targetApi="31">
 
+        <!-- Your existing activities -->
         <activity android:name=".today_trend" android:exported="false"/>
         <activity android:name=".main_page" android:exported="false"/>
         <activity android:name=".trends" android:exported="false"/>
         <activity android:name=".Register" android:exported="false"/>
-
+        <activity android:name=".Survey" android:exported="false"/>
         <activity android:name=".Login" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -27,9 +30,16 @@
             </intent-filter>
         </activity>
 
+        <!-- The application class for WorkManager -->
+        <service
+            android:name=".PressureService"
+            android:foregroundServiceType="location"
+            tools:ignore="ForegroundServicePermission" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts"/>
+
     </application>
 
 </manifest>
