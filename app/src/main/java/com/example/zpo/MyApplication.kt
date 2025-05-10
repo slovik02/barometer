@@ -7,7 +7,9 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.Observer
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
@@ -38,11 +40,9 @@ class MyApplication : Application() {
         }
     }
 
-
-
     private fun scheduleInitialPressureWorker() {
         val periodicRequest = PeriodicWorkRequestBuilder<PressureWorker>(
-            15, TimeUnit.MINUTES // 15 min is minimum for PeriodicWorker
+            30, TimeUnit.MINUTES // 15 min is minimum for PeriodicWorker
         )
             .addTag("PressureWorker")
             .build()

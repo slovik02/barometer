@@ -6,6 +6,7 @@ import android.content.Intent
 import android.hardware.*
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 
 class PressureService : Service(), SensorEventListener {

@@ -19,6 +19,7 @@
 
         <!-- Your existing activities -->
         <activity android:name=".today_trend" android:exported="false"/>
+        <activity android:name=".MyApplication" android:exported="false"/>
         <activity android:name=".main_page" android:exported="false"/>
         <activity android:name=".trends" android:exported="false"/>
         <activity android:name=".Register" android:exported="false"/>
