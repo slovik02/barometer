@@ -123,7 +123,45 @@ class today_trend : AppCompatActivity() {
                     Entry(x, avgPressure)
                 }.sortedBy { it.x }
 
+                val dailyMean = averagedEntries.map { it.y }.average().toFloat()
+
+                val changePresView = findViewById<TextView>(R.id.change_pres)
+
+                var rapidChange = false
+                for (i in 0 until averagedEntries.size - 2) {
+                    val p1 = averagedEntries[i].y
+                    val p2 = averagedEntries[i + 1].y
+                    val p3 = averagedEntries[i + 2].y
+                    val min = listOf(p1, p2, p3).minOrNull() ?: continue
+                    val max = listOf(p1, p2, p3).maxOrNull() ?: continue
+                    if (max - min >= 3f) {
+                        rapidChange = true
+                        break
+                    }
+                }
+
+                changePresView.text = when {
+                    rapidChange -> "changing very rapidly"
+                    dailyMean < 1000f -> "very low (mean below 1000hPa)"
+                    dailyMean > 1013f -> "very high (over 1013hPa)"
+                    else -> "normal: %.2f hPa".format(dailyMean)
+                }
+
+
+                val changeFeelView = findViewById<TextView>(R.id.change_feel)
+
+                if (!rapidChange && dailyMean in 1000f..1013f) {
+                    changeFeelView.text = "not feel any health problems related to atmospheric pressure"
+                }
+                else {
+                    changeFeelView.text = "feel some health problems related to atmospheric " +
+                            "pressure. For more information look in the section 'Well-being pattern"
+                }
+
+
+
                 onComplete(averagedEntries)
+
             }
             .addOnFailureListener {
                 Log.e(TAG, "Failed to fetch Firestore data", it)

@@ -9,6 +9,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
+import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -17,8 +18,11 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.coroutines.resume
+
 
 
 class PressureWorker(
@@ -33,18 +37,18 @@ class PressureWorker(
 
     override suspend fun doWork(): Result {
         createNotificationChannelIfNeeded()
-        setForeground(createForegroundInfo()) // Make worker foreground immediately
+        setForeground(createForegroundInfo())
 
         Log.d(TAG, "Worker started at: ${getCurrentFormattedTime()}")
 
-        val pressure = getSavedPressure()
+        val pressure = readSensorDirectly()
         if (pressure != null) {
+            savePressureLocally(pressure)
             uploadPressureData(pressure)
         } else {
-            Log.w(TAG, "No pressure data found to upload!")
+            Log.w(TAG, "Failed to get fresh pressure reading.")
         }
 
-        Log.d(TAG, "Worker completed successfully.")
         return Result.success()
     }
 
@@ -64,15 +68,47 @@ class PressureWorker(
         val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setContentTitle("Pressure Upload")
             .setContentText("Uploading atmospheric pressure data...")
-            .setSmallIcon(R.drawable.add) // Replace with your app icon
+            .setSmallIcon(R.drawable.add)
             .build()
 
         return ForegroundInfo(1, notification)
     }
 
-    private fun getSavedPressure(): Float? {
+    private suspend fun readSensorDirectly(): Float? = suspendCancellableCoroutine { cont ->
+        val sensorManager = applicationContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE)
+
+        if (pressureSensor == null) {
+            cont.resume(null)
+            return@suspendCancellableCoroutine
+        }
+
+        val listener = object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent) {
+                if (event.sensor.type == Sensor.TYPE_PRESSURE) {
+                    cont.resume(event.values[0])
+                    sensorManager.unregisterListener(this)
+                }
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+        }
+
+        sensorManager.registerListener(listener, pressureSensor, SensorManager.SENSOR_DELAY_NORMAL)
+
+        // Fallback: timeout in 3 seconds
+        Handler(Looper.getMainLooper()).postDelayed({
+            sensorManager.unregisterListener(listener)
+            if (cont.isActive) cont.resume(null)
+        }, 3000)
+    }
+
+    private fun savePressureLocally(pressure: Float) {
         val prefs = applicationContext.getSharedPreferences("pressure_prefs", Context.MODE_PRIVATE)
-        return prefs.getFloat("latest_pressure", -1f).takeIf { it >= 0 }
+        prefs.edit()
+            .putFloat("latest_pressure", pressure)
+            .putLong("pressure_timestamp", System.currentTimeMillis())
+            .apply()
     }
 
     private fun uploadPressureData(pressure: Float) {

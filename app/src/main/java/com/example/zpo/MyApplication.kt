@@ -42,7 +42,7 @@ class MyApplication : Application() {
 
     private fun scheduleInitialPressureWorker() {
         val periodicRequest = PeriodicWorkRequestBuilder<PressureWorker>(
-            30, TimeUnit.MINUTES // 15 min is minimum for PeriodicWorker
+            30, TimeUnit.MINUTES
         )
             .addTag("PressureWorker")
             .build()

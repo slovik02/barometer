@@ -27,7 +27,7 @@
             android:layout_width="154dp"
             android:layout_height="51dp"
             android:fontFamily="@font/abhaya_libre"
-            android:text="Due to today pressure trend you will probably"
+            android:text="Due to today's pressure trend you will probably"
             android:textAlignment="center"
             android:textColor="#000000"
             android:textSize="14sp"
@@ -43,17 +43,17 @@
             android:id="@+id/change_feel"
             android:layout_width="156dp"
             android:layout_height="145dp"
-            android:fontFamily="@font/abhaya_libre"
             android:textAlignment="center"
+            android:fontFamily="@font/abhaya_libre"
             android:textColor="#000000"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.75"
+            app:layout_constraintHorizontal_bias="0.666"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.37" />
+            app:layout_constraintVertical_bias="0.369" />
 
         <TextView
             android:id="@+id/textView5"
