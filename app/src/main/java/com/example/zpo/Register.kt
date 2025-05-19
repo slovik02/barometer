@@ -69,7 +69,7 @@ class Register : AppCompatActivity() {
                     if (task.isSuccessful) {
                         showToast("Registration successful! You can now log in.")
                         FirebaseAuth.getInstance().signOut()
-                        startActivity(Intent(this, Login::class.java))
+                        startActivity(Intent(this, PressureWindow::class.java))
                         finish()
                     } else {
                         showToast("Registration failed: ${task.exception?.message}")
