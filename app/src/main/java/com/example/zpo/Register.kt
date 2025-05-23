@@ -64,17 +64,11 @@ class Register : AppCompatActivity() {
             val email = inputEmail.text.toString().trim()
             val password = inputPassword.text.toString().trim()
 
-            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        showToast("Registration successful! You can now log in.")
-                        FirebaseAuth.getInstance().signOut()
-                        startActivity(Intent(this, PressureWindow::class.java))
-                        finish()
-                    } else {
-                        showToast("Registration failed: ${task.exception?.message}")
-                    }
-                }
+            val intent = Intent(this, PressureWindow::class.java)
+            intent.putExtra("EMAIL", email)
+            intent.putExtra("PASSWORD", password)
+            startActivity(intent)
+            finish()
         }
     }
 

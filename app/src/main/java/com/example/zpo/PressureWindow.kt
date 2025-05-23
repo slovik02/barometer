@@ -7,6 +7,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class PressureWindow : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,19 +22,59 @@ class PressureWindow : AppCompatActivity() {
         editTextUpper.inputType = InputType.TYPE_CLASS_NUMBER
         editTextLower.inputType = InputType.TYPE_CLASS_NUMBER
 
-        buttonSubmit.setOnClickListener {
-            val upperValue = editTextUpper.text.toString().toIntOrNull()
-            val lowerValue = editTextLower.text.toString().toIntOrNull()
+        val email = intent.getStringExtra("EMAIL") ?: ""
+        val password = intent.getStringExtra("PASSWORD") ?: ""
 
-            if (upperValue != null && lowerValue != null && upperValue > lowerValue) {
-                val intent = Intent(this, main_page::class.java)
-                intent.putExtra("UPPER_LIMIT", upperValue)
-                intent.putExtra("LOWER_LIMIT", lowerValue)
-                startActivity(intent)
-                finish()
-            } else {
-                Toast.makeText(this, "Please enter valid limits (upper > lower)", Toast.LENGTH_SHORT).show()
+        buttonSubmit.setOnClickListener {
+            val upperText = editTextUpper.text.toString()
+            val lowerText = editTextLower.text.toString()
+
+            if (upperText.isEmpty() || lowerText.isEmpty()) {
+                Toast.makeText(this, "Please fill in both values", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            val upperValue = upperText.toIntOrNull()
+            val lowerValue = lowerText.toIntOrNull()
+
+            if (upperValue == null || lowerValue == null) {
+                Toast.makeText(this, "Please enter valid numbers", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (upperValue <= lowerValue) {
+                Toast.makeText(this, "Upper limit must be greater than lower", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Tworzenie konta dopiero teraz
+            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener { authResult ->
+                    val userId = authResult.user?.uid
+                    val db = FirebaseFirestore.getInstance()
+
+                    val pressureData = hashMapOf(
+                        "upper" to upperValue,
+                        "lower" to lowerValue
+                    )
+
+                    if (userId != null) {
+                        db.collection("users").document(userId)
+                            .set(pressureData)
+                            .addOnSuccessListener {
+                                Toast.makeText(this, "User registered and data saved!", Toast.LENGTH_SHORT).show()
+                                FirebaseAuth.getInstance().signOut()
+                                startActivity(Intent(this, Login::class.java))
+                                finish()
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(this, "Failed to save limits: ${e.message}", Toast.LENGTH_LONG).show()
+                            }
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Registration failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
         }
     }
 }
