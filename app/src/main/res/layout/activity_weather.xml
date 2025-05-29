@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#8899DE"
+    tools:context=".weather">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout3"
+        android:layout_width="305dp"
+        android:layout_height="276dp"
+        android:background="@drawable/main_item_draw"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.558"></androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_prediction"
+        android:layout_width="305dp"
+        android:layout_height="127dp"
+        android:background="@drawable/item_draw_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.945">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="298dp"
+        android:layout_height="167dp"
+        android:background="@drawable/item_draw_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.078">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.917"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cloudy" />
+
+        <TextView
+            android:id="@+id/temp_text"
+            android:layout_width="83dp"
+            android:layout_height="26dp"
+            android:fontFamily="@font/abhaya_libre"
+            android:text="Temperature: "
+            android:textAlignment="textStart"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.032"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.113" />
+
+        <TextView
+            android:id="@+id/weather_condition_text"
+            android:layout_width="87dp"
+            android:layout_height="29dp"
+            android:fontFamily="@font/abhaya_libre"
+            android:text="Weather: "
+            android:textAlignment="textStart"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.033"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.398" />
+
+        <TextView
+            android:id="@+id/humidity_text"
+            android:layout_width="87dp"
+            android:layout_height="29dp"
+            android:fontFamily="@font/abhaya_libre"
+            android:text="Humidity: "
+            android:textAlignment="textStart"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.033"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.688" />
+
+        <TextView
+            android:id="@+id/temp_value"
+            android:layout_width="83dp"
+            android:layout_height="26dp"
+            android:fontFamily="@font/abhaya_libre"
+            android:textAlignment="textStart"
+            android:textColor="#000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.418"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.113" />
+
+        <TextView
+            android:id="@+id/weather_value"
+            android:layout_width="83dp"
+            android:layout_height="26dp"
+            android:fontFamily="@font/abhaya_libre"
+            android:textAlignment="textStart"
+            android:textColor="#000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.437"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.39" />
+
+        <TextView
+            android:id="@+id/humidity_value"
+            android:layout_width="83dp"
+            android:layout_height="26dp"
+            android:fontFamily="@font/abhaya_libre"
+            android:textAlignment="textStart"
+            android:textColor="#000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.437"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.673" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
