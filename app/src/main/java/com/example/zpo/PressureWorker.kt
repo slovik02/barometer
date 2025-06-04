@@ -23,8 +23,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.coroutines.resume
 
-
-
 class PressureWorker(
     context: Context,
     workerParams: WorkerParameters

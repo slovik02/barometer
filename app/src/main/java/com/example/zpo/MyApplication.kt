@@ -23,6 +23,7 @@ class MyApplication : Application() {
         Log.d("MyApplication", "App created. Scheduling PressureWorker...")
         createNotificationChannel()
         scheduleInitialPressureWorker()
+        scheduleWeatherWorker()
 
         val serviceIntent = Intent(this, PressureService::class.java)
         startForegroundService(serviceIntent)
@@ -51,6 +52,18 @@ class MyApplication : Application() {
             "PressureWorkerChain",
             ExistingPeriodicWorkPolicy.KEEP,
             periodicRequest
+        )
+    }
+
+    private fun scheduleWeatherWorker() {
+        val request = PeriodicWorkRequestBuilder<WeatherWorker>(30, TimeUnit.MINUTES)
+            .addTag("WeatherWorker")
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "WeatherWorkerChain",
+            ExistingPeriodicWorkPolicy.KEEP,
+            request
         )
     }
 }

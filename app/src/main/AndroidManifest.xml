@@ -5,9 +5,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
+        tools:ignore="CoarseFineLocation" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -17,6 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Zpo"
         tools:targetApi="31">
+
         <activity
             android:name=".weather"
             android:exported="false"
@@ -24,9 +27,6 @@
         <!-- Your existing activities -->
         <activity
             android:name=".today_trend"
-            android:exported="false" />
-        <activity
-            android:name=".MyApplication"
             android:exported="false" />
         <activity
             android:name=".main_page"
@@ -45,10 +45,11 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- The application class for WorkManager -->
+        </activity>
+
+        <!-- PressureService foreground service -->
         <service
             android:name=".PressureService"
             android:foregroundServiceType="location"

@@ -11,10 +11,13 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -24,12 +27,24 @@ class main_page : AppCompatActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private var pressureSensor: Sensor? = null
     private lateinit var pressureTextView: TextView
+    private lateinit var logoutButton: ImageView
     private val handler = Handler(Looper.getMainLooper())
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_page)
+
+        logoutButton = findViewById<ImageView>(R.id.logout)
+        logoutButton.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+
+            // Go back to the login screen
+            val intent = Intent(this, Login::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
 
         requestIgnoreBatteryOptimizations()
         pressureTextView = findViewById(R.id.atm_pres)
