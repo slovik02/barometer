@@ -69,15 +69,23 @@ class WeatherWorker(appContext: Context, workerParams: WorkerParameters) :
 
             saveWeatherLocally(temp, humidity, condition)
 
+            val now = Calendar.getInstance()
+            val dateStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(now.time)
+            val timeStr = SimpleDateFormat("HH:mm", Locale.getDefault()).format(now.time)
+
             val data = mapOf(
                 "temp" to temp,
                 "humidity" to humidity,
                 "condition" to condition,
-                "timestamp" to System.currentTimeMillis()
+                "time" to timeStr
             )
 
+            val docId = "$dateStr-$timeStr"
+
+
             Log.d(TAG, "Uploading weather data to Firestore: $data")
-            uploadWeatherData(data)
+            uploadWeatherData(data, dateStr, docId)
+
 
             Log.d(TAG, "===== WeatherWorker finished successfully at: ${getCurrentFormattedTime()} =====")
             Result.success()
@@ -102,18 +110,13 @@ class WeatherWorker(appContext: Context, workerParams: WorkerParameters) :
         Log.d(TAG, "Weather data saved locally")
     }
 
-    private fun uploadWeatherData(data: Map<String, Any>) {
+    private fun uploadWeatherData(data: Map<String, Any>, dateStr: String, docId: String) {
         val firestore = FirebaseFirestore.getInstance()
         val userEmail = FirebaseAuth.getInstance().currentUser?.email
         if (userEmail == null) {
             Log.e(TAG, "User not authenticated. Skipping upload.")
             return
         }
-
-        val now = Calendar.getInstance()
-        val dateStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(now.time)
-        val timeStr = SimpleDateFormat("HH:mm", Locale.getDefault()).format(now.time)
-        val docId = "$dateStr-$timeStr"
 
         firestore.collection(userEmail)
             .document("weather")
@@ -127,6 +130,7 @@ class WeatherWorker(appContext: Context, workerParams: WorkerParameters) :
                 Log.e(TAG, "Failed to upload weather data", e)
             }
     }
+
 
     private fun createNotificationChannelIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
