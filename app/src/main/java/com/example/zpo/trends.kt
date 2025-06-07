@@ -1,5 +1,6 @@
 package com.example.zpo
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
@@ -12,7 +13,9 @@ import androidx.core.view.WindowInsetsCompat
 
 class trends : AppCompatActivity() {
     private lateinit var today_button: ConstraintLayout
+    private lateinit var weather_but: ConstraintLayout
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -27,6 +30,12 @@ class trends : AppCompatActivity() {
         today_button.setOnClickListener {
             homeToday()
         }
+
+        weather_but = findViewById(R.id.weather_button)
+        weather_but.setOnClickListener {
+            homeWeather()
+        }
+
     }
 
     private fun homeToday(){
@@ -34,4 +43,8 @@ class trends : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private fun homeWeather(){
+        val intent = Intent(this, weather::class.java)
+        startActivity(intent)
+    }
 }

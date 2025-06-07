@@ -109,6 +109,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/weather_button"
         android:layout_width="156dp"
         android:layout_height="232dp"
         android:background="@drawable/main_item_draw"
