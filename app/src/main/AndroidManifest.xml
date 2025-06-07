@@ -2,11 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -17,21 +21,36 @@
         android:theme="@style/Theme.Zpo"
         tools:targetApi="31">
 
+        <activity
+            android:name=".weather"
+            android:exported="false"
+            android:theme="@style/Theme.Zpo" />
         <!-- Your existing activities -->
-        <activity android:name=".today_trend" android:exported="false"/>
-        <activity android:name=".PressureWindow" android:exported="false"/>
-        <activity android:name=".main_page" android:exported="false"/>
-        <activity android:name=".trends" android:exported="false"/>
-        <activity android:name=".Register" android:exported="false"/>
-        <activity android:name=".Survey" android:exported="false"/>
-        <activity android:name=".Login" android:exported="true">
+        <activity
+            android:name=".today_trend"
+            android:exported="false" />
+        <activity
+            android:name=".main_page"
+            android:exported="false" />
+        <activity
+            android:name=".trends"
+            android:exported="false" />
+        <activity
+            android:name=".Register"
+            android:exported="false" />
+        <activity
+            android:name=".Survey"
+            android:exported="false" />
+        <activity
+            android:name=".Login"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- The application class for WorkManager -->
+        <!-- PressureService foreground service -->
         <service
             android:name=".PressureService"
             android:foregroundServiceType="location"
@@ -39,8 +58,7 @@
 
         <meta-data
             android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts"/>
-
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

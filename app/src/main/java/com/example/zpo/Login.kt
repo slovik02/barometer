@@ -20,7 +20,6 @@ class Login : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         auth = FirebaseAuth.getInstance()
-        auth.signOut()
 
 
         if (auth.currentUser != null) {
