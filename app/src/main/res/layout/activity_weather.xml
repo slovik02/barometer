@@ -44,6 +44,33 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.945">
 
+        <TextView
+            android:id="@+id/summary"
+            android:layout_width="167dp"
+            android:layout_height="90dp"
+            android:text=""
+            android:fontFamily="@font/abhaya_libre"
+            android:textAlignment="textStart"
+            android:textColor="#000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.115"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.486" />
+
+        <ImageView
+            android:id="@+id/condition_icon"
+            android:layout_width="70dp"
+            android:layout_height="72dp"
+            android:contentDescription="Weather Icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.931"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.49"
+            tools:ignore="MissingConstraints" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
