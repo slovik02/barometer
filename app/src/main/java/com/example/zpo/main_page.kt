@@ -1,6 +1,8 @@
 package com.example.zpo
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -23,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.Calendar
 
 class main_page : AppCompatActivity(), SensorEventListener {
 
@@ -40,6 +43,7 @@ class main_page : AppCompatActivity(), SensorEventListener {
     private val REQUEST_LOCATION_PERMISSIONS_CODE = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        scheduleDailyAlarm()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_page)
 
@@ -90,6 +94,32 @@ class main_page : AppCompatActivity(), SensorEventListener {
         // Sprawdź i poproś o uprawnienia lokalizacji, potem uruchom serwis
         checkAndRequestLocationPermissions()
     }
+
+    private fun scheduleDailyAlarm() {
+        val intent = Intent(this, PressureNotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 8)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            if (before(Calendar.getInstance())) {
+                add(Calendar.DAY_OF_MONTH, 1)
+            }
+        }
+
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent
+        )
+    }
+
 
     override fun onResume() {
         super.onResume()
