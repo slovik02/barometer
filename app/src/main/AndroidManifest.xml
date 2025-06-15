@@ -44,6 +44,8 @@
         <activity
             android:name=".PressureWindow"
             android:exported="false" />
+        <activity android:name=".PressureWindowActivity"
+            android:exported="false" />
         <activity
             android:name=".Login"
             android:exported="true">

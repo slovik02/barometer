@@ -1,6 +1,7 @@
 package com.example.zpo
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -55,12 +56,7 @@ class Survey : AppCompatActivity(), SensorEventListener {
             val headache = getSelectedRadioText(radioGroup2)
             val sleepy = getSelectedRadioText(radioGroup3)
 
-            val userId = auth.currentUser?.uid
-
-            if (userId == null) {
-                Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            val userId = auth.currentUser?.uid ?: return@setOnClickListener
 
             val surveyData = hashMapOf(
                 "feeling" to feeling,
@@ -71,13 +67,12 @@ class Survey : AppCompatActivity(), SensorEventListener {
                 "timestamp" to FieldValue.serverTimestamp()
             )
 
-            // Zapis do podkolekcji użytkownika
             db.collection("users").document(userId)
                 .collection("wellbeing_surveys")
                 .add(surveyData)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Survey saved!", Toast.LENGTH_SHORT).show()
-                    checkNegativeAnswersInPressureRange(userId)
+                    checkPressureWindowAdjustment(userId)
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
@@ -105,56 +100,53 @@ class Survey : AppCompatActivity(), SensorEventListener {
         }
     }
 
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        // Required but unused
-    }
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
     override fun onDestroy() {
         super.onDestroy()
         sensorManager.unregisterListener(this)
     }
 
-    private fun checkNegativeAnswersInPressureRange(userId: String) {
+    private fun checkPressureWindowAdjustment(userId: String) {
         val userRef = db.collection("users").document(userId)
 
-        userRef.get()
-            .addOnSuccessListener { document ->
-                if (document != null && document.contains("lower") && document.contains("upper")) {
-                    val lower = document.getDouble("lower") ?: return@addOnSuccessListener
-                    val upper = document.getDouble("upper") ?: return@addOnSuccessListener
+        userRef.get().addOnSuccessListener { document ->
+            if (document != null && document.contains("lower") && document.contains("upper")) {
+                val lower = document.getDouble("lower") ?: return@addOnSuccessListener
+                val upper = document.getDouble("upper") ?: return@addOnSuccessListener
 
-                    userRef.collection("wellbeing_surveys")
-                        .whereGreaterThanOrEqualTo("numeric_pressure", lower)
-                        .whereLessThanOrEqualTo("numeric_pressure", upper)
-                        .get()
-                        .addOnSuccessListener { result ->
-                            var negativeCount = 0
-                            for (doc in result) {
-                                val feeling = doc.getString("feeling") ?: ""
-                                val headache = doc.getString("headache") ?: ""
-                                val sleepy = doc.getString("sleepy") ?: ""
+                userRef.collection("wellbeing_surveys")
+                    .whereGreaterThanOrEqualTo("numeric_pressure", lower)
+                    .whereLessThanOrEqualTo("numeric_pressure", upper)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        var total = 0
+                        var negative = 0
 
-                                if (
-                                    feeling == "Bad" ||
-                                    headache == "Hurts bad" ||
-                                    sleepy == "Yes"
-                                ) {
-                                    negativeCount++
-                                }
-                            }
+                        for (doc in result) {
+                            total++
+                            val feeling = doc.getString("feeling") ?: ""
+                            val headache = doc.getString("headache") ?: ""
+                            val sleepy = doc.getString("sleepy") ?: ""
 
-                            if (negativeCount >= 5) {
-                                AlertDialog.Builder(this)
-                                    .setTitle("Sugerowana zmiana")
-                                    .setMessage("Zaobserwowano 5 negatywnych wyników w Twoim zakresie dobrego ciśnienia. Czy chcesz zmodyfikować jego wartości?")
-                                    .setPositiveButton("Tak") { _, _ ->
-                                        // Można przejść do aktywności z edycją lub otworzyć formularz
-                                    }
-                                    .setNegativeButton("Nie", null)
-                                    .show()
+                            if (feeling == "Bad" || headache == "Hurts bad" || sleepy == "Yes") {
+                                negative++
                             }
                         }
-                }
+
+                        if (total >= 5 && negative >= 5 && negative.toDouble() / total >= 0.5) {
+                            AlertDialog.Builder(this)
+                                .setTitle("Sugerowana zmiana")
+                                .setMessage("Zaobserwowano, że ${"%.0f".format(100.0 * negative / total)}% odpowiedzi w dobrym zakresie to złe samopoczucie. Czy chcesz zmienić zakres ciśnienia?")
+                                .setPositiveButton("Tak") {  _, _ ->
+                                    val intent = Intent(this@Survey, PressureWindowActivity::class.java)
+                                    startActivity(intent)
+                                }
+                                .setNegativeButton("Nie", null)
+                                .show()
+                        }
+                    }
             }
+        }
     }
 }
