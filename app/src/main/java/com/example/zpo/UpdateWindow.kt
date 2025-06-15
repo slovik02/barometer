@@ -45,7 +45,7 @@ class PressureWindowActivity : AppCompatActivity(), SensorEventListener {
             currentPressureTextView.text = "Barometer not available"
             Toast.makeText(this, "Your device doesn't have a pressure sensor", Toast.LENGTH_LONG).show()
         } else {
-            currentPressureTextView.text = "Waiting for pressure data..."
+            sensorManager.registerListener(this, pressureSensor, SensorManager.SENSOR_DELAY_UI)
         }
 
         val userId = auth.currentUser?.uid
@@ -109,7 +109,7 @@ class PressureWindowActivity : AppCompatActivity(), SensorEventListener {
         if (event?.sensor?.type == Sensor.TYPE_PRESSURE) {
             val pressure = event.values[0]
             val rounded = BigDecimal(pressure.toDouble()).setScale(2, RoundingMode.HALF_UP)
-            currentPressureTextView.text = "Current pressure: $rounded hPa"
+            currentPressureTextView.text = "$rounded hPa"
         }
     }
 
