@@ -105,19 +105,19 @@ class main_page : AppCompatActivity(), SensorEventListener {
 
         val calendar = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 8)
-            set(Calendar.MINUTE, 0)
+            set(Calendar.MINUTE, 30)
             set(Calendar.SECOND, 0)
             if (before(Calendar.getInstance())) {
                 add(Calendar.DAY_OF_MONTH, 1)
             }
         }
 
-        alarmManager.setRepeating(
+        alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
+
     }
 
 

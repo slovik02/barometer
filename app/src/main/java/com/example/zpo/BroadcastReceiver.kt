@@ -22,8 +22,8 @@ class PressureNotificationReceiver : BroadcastReceiver() {
                 val lower = document.getDouble("lower") ?: return@addOnSuccessListener
                 val upper = document.getDouble("upper") ?: return@addOnSuccessListener
 
-                val sharedPrefs = context.getSharedPreferences("ZPO_PREFS", Context.MODE_PRIVATE)
-                val lastPressure = sharedPrefs.getFloat("last_pressure", -1f).toDouble()
+                val sharedPrefs = context.getSharedPreferences("pressure_prefs", Context.MODE_PRIVATE)
+                val lastPressure = sharedPrefs.getFloat("latest_pressure", -1f).toDouble()
 
                 if (lastPressure < lower || lastPressure > upper) {
                     sendNotification(context, lastPressure)
@@ -47,9 +47,13 @@ class PressureNotificationReceiver : BroadcastReceiver() {
         val notification = NotificationCompat.Builder(context, "pressure_channel")
             .setContentTitle("Uwaga na ciśnienie!")
             .setContentText("Ciśnienie $pressure hPa może wpływać na Twoje samopoczucie.")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH) // <== make it HIGH
+            .setSmallIcon(R.drawable.add) // replace with your own icon
+            .setAutoCancel(true)
             .build()
 
-        notificationManager.notify(1001, notification)
+        val notificationId = (System.currentTimeMillis() % Int.MAX_VALUE).toInt() // UNIQUE
+        notificationManager.notify(notificationId, notification)
     }
+
 }
