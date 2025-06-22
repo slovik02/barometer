@@ -73,6 +73,12 @@ class Survey : AppCompatActivity(), SensorEventListener {
                 .addOnSuccessListener {
                     Toast.makeText(this, "Survey saved!", Toast.LENGTH_SHORT).show()
                     checkPressureWindowAdjustment(userId)
+
+                    // Przejście do ekranu głównego po udanym zapisie
+                    val intent = Intent(this, main_page::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
@@ -138,7 +144,7 @@ class Survey : AppCompatActivity(), SensorEventListener {
                             AlertDialog.Builder(this)
                                 .setTitle("Sugerowana zmiana")
                                 .setMessage("Zaobserwowano, że ${"%.0f".format(100.0 * negative / total)}% odpowiedzi w dobrym zakresie to złe samopoczucie. Czy chcesz zmienić zakres ciśnienia?")
-                                .setPositiveButton("Tak") {  _, _ ->
+                                .setPositiveButton("Tak") { _, _ ->
                                     val intent = Intent(this@Survey, PressureWindowActivity::class.java)
                                     startActivity(intent)
                                 }
