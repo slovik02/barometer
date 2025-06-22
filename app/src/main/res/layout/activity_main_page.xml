@@ -35,8 +35,8 @@
 
     <TextView
         android:id="@+id/main_text"
-        android:layout_width="287dp"
-        android:layout_height="106dp"
+        android:layout_width="283dp"
+        android:layout_height="150dp"
         android:fontFamily="@font/abhaya_libre"
         android:text="Current atmospheric pressure"
         android:textAlignment="center"
@@ -46,7 +46,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.145" />
+        app:layout_constraintVertical_bias="0.099" />
 
     <TextView
         android:id="@+id/atm_pres"
@@ -67,8 +67,8 @@
 
     <ImageView
         android:id="@+id/logout"
-        android:layout_width="44dp"
-        android:layout_height="39dp"
+        android:layout_width="41dp"
+        android:layout_height="31dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.975"
@@ -92,7 +92,7 @@
         app:layout_constraintHorizontal_bias="0.975"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.089" />
+        app:layout_constraintVertical_bias="0.066" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.zpo.weather.TimeAxisFormatter
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.components.XAxis
@@ -52,8 +53,12 @@ class today_trend : AppCompatActivity() {
             lineChart.xAxis.apply {
                 position = XAxis.XAxisPosition.BOTTOM
                 setDrawGridLines(false)
-                valueFormatter = TimeAxisFormatter()
+                valueFormatter = com.example.zpo.weather.TimeAxisFormatter()
+                granularity = 0.5f
+                isGranularityEnabled = true
+                labelCount = 6
             }
+
 
             lineChart.axisRight.isEnabled = false
             lineChart.description.isEnabled = false

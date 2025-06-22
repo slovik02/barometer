@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.zpo.today_trend.TimeAxisFormatter
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.components.XAxis
@@ -27,6 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.utils.MPPointF
 
 
 class weather : AppCompatActivity() {
@@ -60,20 +62,17 @@ class weather : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
 
         textConditionSummary = findViewById(R.id.summary)
-        fetchDominantCondition()
-
         imageConditionIcon = findViewById(R.id.condition_icon)
+
         fetchDominantCondition()
-
-
         fetchCurrentWeather()
+
         fetchTemperatureData { tempEntries, humidityEntries ->
             if (tempEntries.isEmpty()) {
                 Log.w(TAG, "No temperature data available to display.")
             }
             displayChart(tempEntries, humidityEntries)
         }
-
     }
 
     private fun fetchDominantCondition() {
@@ -119,8 +118,6 @@ class weather : AppCompatActivity() {
                 textConditionSummary.text = "Error loading condition"
             }
     }
-
-
 
     private fun fetchCurrentWeather() {
         val url =
@@ -216,7 +213,6 @@ class weather : AppCompatActivity() {
             }
     }
 
-
     private fun displayChart(tempEntries: List<Entry>, humidityEntries: List<Entry>) {
         val tempDataSet = LineDataSet(tempEntries, "Temperature (°C)").apply {
             color = Color.RED
@@ -238,17 +234,23 @@ class weather : AppCompatActivity() {
             position = XAxis.XAxisPosition.BOTTOM
             setDrawGridLines(false)
             valueFormatter = TimeAxisFormatter()
-            textColor = Color.BLACK
+            granularity = 0.5f
+            isGranularityEnabled = true
+            labelCount = 6
         }
 
         chart.axisLeft.textColor = Color.BLACK
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
 
-        chart.marker = CustomMarkerView(this)
+        val customMarker = CustomMarkerView(this)
+        // Use the max size of data sets as total entries count
+        val totalEntriesCount = maxOf(tempEntries.size, humidityEntries.size)
+        customMarker.setTotalEntries(totalEntriesCount)
+        chart.marker = customMarker
+
         chart.invalidate()
     }
-
 
     private fun convertTimeToHalfHourFloat(docId: String): Float {
         val timePart = docId.takeLast(5)
@@ -282,9 +284,16 @@ class weather : AppCompatActivity() {
 
     class CustomMarkerView(context: Context) : MarkerView(context, R.layout.marker_view) {
         private val textView: TextView = findViewById(R.id.marker_text)
+        private var lastEntryX: Float = -1f
+        private var totalEntriesCount: Int = 0
+
+        fun setTotalEntries(count: Int) {
+            totalEntriesCount = count
+        }
 
         override fun refreshContent(e: Entry?, highlight: Highlight?) {
             e?.let {
+                lastEntryX = it.x
                 val hour = it.x.toInt()
                 val minutes = if (it.x % 1 == 0f) "00" else "30"
                 val value = it.y
@@ -295,6 +304,19 @@ class weather : AppCompatActivity() {
             }
             super.refreshContent(e, highlight)
         }
-    }
 
+        override fun getOffsetForDrawingAtPoint(posX: Float, posY: Float): MPPointF {
+            // We consider x values increase by 0.5 per entry,
+            // so index = x * 2; last 10 entries means index >= (totalEntriesCount * 2 - 20)
+            val index = (lastEntryX * 2).toInt()
+
+            return if (totalEntriesCount > 0 && index >= (totalEntriesCount * 2 - 20)) {
+                // Place marker on left for last 10 entries
+                MPPointF(-width.toFloat(), -height / 2f)
+            } else {
+                // Default marker position on right
+                MPPointF(0f, -height / 2f)
+            }
+        }
+    }
 }
