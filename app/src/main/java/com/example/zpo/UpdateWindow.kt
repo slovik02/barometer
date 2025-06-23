@@ -16,6 +16,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.math.BigDecimal
 import java.math.RoundingMode
 
+/**
+ * Ekran pozwalający użytkownikowi ustawić (lub zaktualizować) swój
+ * preferowany zakres ciśnienia atmosferycznego, w którym zwykle czuje się dobrze.
+ *
+ * System może automatycznie zasugerować nowy zakres na podstawie wcześniejszych odpowiedzi,
+ * w których użytkownik deklarował dobre samopoczucie.
+ *
+ * Aplikacja pobiera także aktualne ciśnienie z czujnika barometru.
+ */
 class PressureWindowActivity : AppCompatActivity(), SensorEventListener {
 
     private lateinit var editTextUpper: EditText
@@ -105,6 +114,10 @@ class PressureWindowActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
+    /**
+     * Obsługa zmiany odczytu z czujnika ciśnienia.
+     * Wyświetla aktualne zaokrąglone ciśnienie w hPa.
+     */
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_PRESSURE) {
             val pressure = event.values[0]
@@ -117,6 +130,9 @@ class PressureWindowActivity : AppCompatActivity(), SensorEventListener {
         // Możesz dodać obsługę zmian dokładności jeśli potrzebujesz
     }
 
+    /**
+     * Wznowienie nasłuchiwania czujnika po powrocie do aktywności.
+     */
     override fun onResume() {
         super.onResume()
         pressureSensor?.also {
@@ -126,6 +142,9 @@ class PressureWindowActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
+    /**
+     * Zatrzymanie nasłuchiwania czujnika ciśnienia po zminimalizowaniu aktywności.
+     */
     override fun onPause() {
         super.onPause()
         sensorManager.unregisterListener(this)
