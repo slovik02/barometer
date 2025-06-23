@@ -10,8 +10,22 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * BroadcastReceiver odpowiedzialny za sprawdzanie ciśnienia atmosferycznego zapisanych
+ * w SharedPreferences i porównanie ich z wartościami progowymi zapisanymi w Firestore.
+ * Jeśli ciśnienie przekracza dopuszczalne granice, wysyła powiadomienie do użytkownika.
+ */
+
 class PressureNotificationReceiver : BroadcastReceiver() {
 
+    /**
+     * Metoda wywoływana, gdy odbiornik otrzyma zdarzenie (np. AlarmManager).
+     * Sprawdza aktualne ciśnienie z danych lokalnych i porównuje je z zakresem zapisanym
+     * w dokumentach użytkownika w Firestore.
+     *
+     * @param context Kontekst aplikacji.
+     * @param intent Intencja wywołująca odbiornik.
+     */
     override fun onReceive(context: Context, intent: Intent) {
         val db = FirebaseFirestore.getInstance()
         val auth = FirebaseAuth.getInstance()
@@ -32,6 +46,12 @@ class PressureNotificationReceiver : BroadcastReceiver() {
         }
     }
 
+    /**
+     * Wysyła powiadomienie push do użytkownika z ostrzeżeniem o niebezpiecznym ciśnieniu.
+     *
+     * @param context Kontekst aplikacji.
+     * @param pressure Wartość ciśnienia, które przekroczyło ustalone progi.
+     */
     private fun sendNotification(context: Context, pressure: Double) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 

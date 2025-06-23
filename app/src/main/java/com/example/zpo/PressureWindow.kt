@@ -17,6 +17,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.math.BigDecimal
 import java.math.RoundingMode
 
+/**
+ * Aktywność odpowiedzialna za konfigurację progów ciśnienia atmosferycznego.
+ * Umożliwia odczyt aktualnego ciśnienia z czujnika barometrycznego oraz zapisanie
+ * dolnej i górnej granicy w bazie danych Firebase.
+ * Użytkownik jest rejestrowany w Firebase Authentication.
+ */
 class PressureWindow : AppCompatActivity(), SensorEventListener {
 
     private lateinit var editTextUpper: EditText
@@ -27,6 +33,10 @@ class PressureWindow : AppCompatActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private var pressureSensor: Sensor? = null
 
+    /**
+     * Metoda onCreate - inicjalizacja komponentów interfejsu,
+     * rejestracja czujnika oraz obsługa kliknięcia przycisku do zapisu danych.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.presure_window_layout)
@@ -39,7 +49,6 @@ class PressureWindow : AppCompatActivity(), SensorEventListener {
         editTextUpper.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         editTextLower.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
 
-        // Sensor setup
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE)
 
@@ -100,6 +109,10 @@ class PressureWindow : AppCompatActivity(), SensorEventListener {
         }
     }
 
+    /**
+     * Wywoływana, gdy nastąpi zmiana wartości z czujnika.
+     * Pokazuje aktualne ciśnienie w hPa zaokrąglone do dwóch miejsc po przecinku.
+     */
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_PRESSURE) {
             val pressure = event.values[0]
@@ -112,6 +125,9 @@ class PressureWindow : AppCompatActivity(), SensorEventListener {
         // Optional: log accuracy changes
     }
 
+    /**
+     * Ponowna rejestracja słuchacza czujnika po wznowieniu aktywności.
+     */
     override fun onResume() {
         super.onResume()
         pressureSensor?.also {
@@ -119,6 +135,9 @@ class PressureWindow : AppCompatActivity(), SensorEventListener {
         }
     }
 
+    /**
+     * Wyrejestrowanie słuchacza czujnika, gdy aktywność jest wstrzymana.
+     */
     override fun onPause() {
         super.onPause()
         sensorManager.unregisterListener(this)

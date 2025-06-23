@@ -15,6 +15,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.math.BigDecimal
 import java.math.RoundingMode
 
+/**
+ * Ekran ankiety samopoczucia, który rejestruje odpowiedzi użytkownika
+ * oraz zapisuje je wraz z aktualnym ciśnieniem atmosferycznym do bazy Firestore.
+ * Po zgromadzeniu danych aplikacja może zaproponować użytkownikowi zmianę
+ * wcześniej ustawionych progów ciśnienia.
+ */
 class Survey : AppCompatActivity(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
@@ -86,6 +92,11 @@ class Survey : AppCompatActivity(), SensorEventListener {
         }
     }
 
+    /**
+     * Pobiera tekst zaznaczonego przycisku w grupie radiobuttonów.
+     * @param group Grupa przycisków
+     * @return Tekst zaznaczonej opcji lub "Not answered"
+     */
     private fun getSelectedRadioText(group: RadioGroup): String {
         val selectedId = group.checkedRadioButtonId
         return if (selectedId != -1) {
@@ -95,6 +106,9 @@ class Survey : AppCompatActivity(), SensorEventListener {
         }
     }
 
+    /**
+     * Obsługa zmiany wartości z czujnika ciśnienia – zapisuje wynik do zmiennych i aktualizuje UI.
+     */
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_PRESSURE) {
             val pressure = event.values[0]
@@ -113,6 +127,10 @@ class Survey : AppCompatActivity(), SensorEventListener {
         sensorManager.unregisterListener(this)
     }
 
+    /**
+     * Analizuje wyniki ankiet użytkownika w aktualnym zakresie ciśnienia.
+     * Jeśli wiele odpowiedzi wskazuje na złe samopoczucie, proponuje zmianę zakresu.
+     */
     private fun checkPressureWindowAdjustment(userId: String) {
         val userRef = db.collection("users").document(userId)
 

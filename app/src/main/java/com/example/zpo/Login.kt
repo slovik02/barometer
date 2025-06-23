@@ -9,6 +9,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
+/**
+ * Aktywność logowania. Pozwala użytkownikowi zalogować się do aplikacji przy użyciu
+ * konta Firebase Authentication lub przejść do rejestracji nowego konta.
+ */
 class Login : AppCompatActivity() {
     private lateinit var inputEmail: EditText
     private lateinit var inputPassword: EditText
@@ -16,6 +20,11 @@ class Login : AppCompatActivity() {
     private lateinit var registerButton: Button
     private lateinit var auth: FirebaseAuth
 
+    /**
+     * Inicjalizacja aktywności. Sprawdza, czy użytkownik jest już zalogowany.
+     * Jeśli tak — przekierowuje do głównej strony aplikacji. W przeciwnym razie
+     * ustawia layout i inicjalizuje widoki.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -40,7 +49,9 @@ class Login : AppCompatActivity() {
         }
     }
 
-
+    /**
+     * Inicjalizuje referencje do widoków z layoutu logowania.
+     */
     private fun initializeViews() {
         inputEmail = findViewById(R.id.EditTextEmail)
         inputPassword = findViewById(R.id.EditTextPassowrd)
@@ -48,6 +59,11 @@ class Login : AppCompatActivity() {
         registerButton = findViewById(R.id.buttonRegister)
     }
 
+    /**
+     * Waliduje dane logowania. Sprawdza, czy pola e-mail i hasła są wypełnione.
+     *
+     * @return true jeśli dane są poprawne, false w przeciwnym razie.
+     */
     private fun validateLoginDetails(): Boolean {
         return when {
             TextUtils.isEmpty(inputEmail.text.toString().trim()) -> {
@@ -62,6 +78,11 @@ class Login : AppCompatActivity() {
         }
     }
 
+    /**
+     * Próbuje zalogować użytkownika za pomocą FirebaseAuth.
+     * W przypadku sukcesu przekierowuje do ekranu głównego,
+     * w przeciwnym razie pokazuje błąd.
+     */
     private fun logInUser() {
         if (validateLoginDetails()) {
             val email = inputEmail.text.toString().trim()
@@ -80,11 +101,19 @@ class Login : AppCompatActivity() {
         }
     }
 
+    /**
+     * Przenosi użytkownika do głównego ekranu aplikacji.
+     */
     private fun goToMainPage() {
         val intent = Intent(this, main_page::class.java)
         startActivity(intent)
     }
 
+    /**
+     * Wyświetla krótkie powiadomienie typu Toast.
+     *
+     * @param message Treść wiadomości do wyświetlenia.
+     */
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
