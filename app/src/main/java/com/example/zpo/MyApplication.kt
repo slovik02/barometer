@@ -15,11 +15,18 @@ import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
 
 class MyApplication : Application() {
+    /**
+     * Custom [Application] class that initializes background workers and services when the app starts.
+     *
+     * This class handles:
+     * - Creating notification channels for foreground services.
+     * - Scheduling periodic background tasks (e.g., pressure and weather workers).
+     * - Starting a foreground service for continuous pressure monitoring.
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate() {
         super.onCreate()
 
-        // Schedule the first PressureWorker when the app starts
         Log.d("MyApplication", "App created. Scheduling PressureWorker...")
         createNotificationChannel()
         scheduleInitialPressureWorker()
@@ -30,6 +37,9 @@ class MyApplication : Application() {
     }
 
     private fun createNotificationChannel() {
+        /**
+         * Creates a notification channel required for foreground services on Android O and above.
+         */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChannel = NotificationChannel(
                 "pressure_upload_channel",
@@ -42,6 +52,11 @@ class MyApplication : Application() {
     }
 
     private fun scheduleInitialPressureWorker() {
+        /**
+         * Schedules a periodic [PressureWorker] to run every 30 minutes.
+         *
+         * Uses [ExistingPeriodicWorkPolicy.KEEP] to avoid duplicating scheduled work.
+         */
         val periodicRequest = PeriodicWorkRequestBuilder<PressureWorker>(
             30, TimeUnit.MINUTES
         )
@@ -56,6 +71,11 @@ class MyApplication : Application() {
     }
 
     private fun scheduleWeatherWorker() {
+        /**
+         * Schedules a periodic [WeatherWorker] to run every 30 minutes.
+         *
+         * Also uses [ExistingPeriodicWorkPolicy.KEEP] to ensure only one worker chain is active.
+         */
         val periodicRequest = PeriodicWorkRequestBuilder<WeatherWorker>(30, TimeUnit.MINUTES)
             .addTag("WeatherWorker")
             .build()

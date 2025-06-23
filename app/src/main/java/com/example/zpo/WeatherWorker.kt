@@ -19,6 +19,13 @@ import java.util.*
 
 class WeatherWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
+    /**
+     * WeatherWorker is a background coroutine worker that:
+     * - Fetches current weather data from the OpenWeatherMap API.
+     * - Stores the weather data locally in SharedPreferences.
+     * - Uploads the weather data to Firestore for authenticated users.
+     * - Runs as a foreground service with a persistent notification.
+     */
 
 
     companion object {
@@ -31,6 +38,10 @@ class WeatherWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override suspend fun doWork(): Result {
+        /**
+         * The main work function that runs in the background.
+         * Fetches, parses, stores, and uploads weather data.
+         */
         createNotificationChannelIfNeeded()
         setForeground(createForegroundInfo())
 
@@ -96,9 +107,19 @@ class WeatherWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     private fun getCurrentFormattedTime(): String =
+        /**
+         * Returns the current time formatted as HH:mm:ss.
+         */
         SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
 
     private fun saveWeatherLocally(temp: Double, humidity: Int, condition: String) {
+        /**
+         * Saves the latest weather data locally in SharedPreferences.
+         *
+         * @param temp Temperature in Celsius.
+         * @param humidity Humidity percentage.
+         * @param condition Weather condition string.
+         */
         Log.d(TAG, "Saving weather data locally")
         val prefs = applicationContext.getSharedPreferences("weather_prefs", Context.MODE_PRIVATE)
         prefs.edit()
@@ -111,6 +132,13 @@ class WeatherWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     private fun uploadWeatherData(data: Map<String, Any>, dateStr: String, docId: String) {
+        /**
+         * Uploads the weather data to Firestore under the authenticated user's collection.
+         *
+         * @param data Weather data map to upload.
+         * @param dateStr Current date string (used for subcollection).
+         * @param docId Unique document ID combining date and time.
+         */
         val firestore = FirebaseFirestore.getInstance()
         val userEmail = FirebaseAuth.getInstance().currentUser?.email
         if (userEmail == null) {
@@ -133,6 +161,9 @@ class WeatherWorker(appContext: Context, workerParams: WorkerParameters) :
 
 
     private fun createNotificationChannelIfNeeded() {
+        /**
+         * Creates a notification channel for foreground service notifications.
+         */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
@@ -146,6 +177,11 @@ class WeatherWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     private fun createForegroundInfo(): ForegroundInfo {
+        /**
+         * Creates foreground service info with a persistent notification.
+         *
+         * @return ForegroundInfo used to keep the Worker alive.
+         */
         val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setContentTitle("Weather Update")
             .setContentText("Fetching latest weather info...")

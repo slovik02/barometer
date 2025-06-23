@@ -22,6 +22,11 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class today_trend : AppCompatActivity() {
+    /**
+     * Displays a line chart of atmospheric pressure data recorded throughout the current day.
+     * The chart includes time on the X-axis (in 30-minute intervals) and pressure in hPa on the Y-axis.
+     * Additional information is displayed about rapid changes or abnormal mean pressure.
+     */
     private val TAG = "today_trend"
     private val db = FirebaseFirestore.getInstance()
 
@@ -29,6 +34,9 @@ class today_trend : AppCompatActivity() {
         get() = FirebaseAuth.getInstance().currentUser?.email
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        /**
+         * Called when the activity is starting. Initializes UI and fetches chart data.
+         */
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_today_trend)
 
@@ -87,6 +95,10 @@ class today_trend : AppCompatActivity() {
     }
 
     private fun fetchPressureData(onComplete: (List<Entry>) -> Unit) {
+        /**
+         * Fetches pressure data from Firestore for the current user and today's date.
+         * Converts timestamps to 30-minute intervals and averages multiple readings per interval.
+         */
         val email = userEmail
         if (email == null) {
             Log.e(TAG, "No user is logged in.")
@@ -175,6 +187,10 @@ class today_trend : AppCompatActivity() {
     }
 
     private fun convertTimeToHalfHourFloat(docId: String): Float {
+        /**
+         * Converts a Firestore document ID (formatted as a timestamp) into a float representation
+         * of the hour in 30-minute increments (e.g., "13:15" becomes 13.0, "13:30" becomes 13.5)
+         */
         val timePart = docId.takeLast(5)
         val parts = timePart.split(":")
         if (parts.size < 2) {
@@ -197,6 +213,9 @@ class today_trend : AppCompatActivity() {
     }
 
     class TimeAxisFormatter : com.github.mikephil.charting.formatter.ValueFormatter() {
+        /**
+         * Formats X-axis float values into time strings (e.g., 14.0 → "14:00", 14.5 → "14:30").
+         */
         override fun getFormattedValue(value: Float): String {
             val hour = value.toInt()
             val minutes = if (value % 1 == 0f) "00" else "30"

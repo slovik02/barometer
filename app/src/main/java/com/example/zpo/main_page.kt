@@ -28,14 +28,16 @@ import java.math.RoundingMode
 import java.util.Calendar
 
 class main_page : AppCompatActivity(), SensorEventListener {
-
+    /**
+     * Main activity of the app displaying pressure and navigation options.
+     * Handles sensor data, user authentication, and service management.
+     */
     private lateinit var sensorManager: SensorManager
     private var pressureSensor: Sensor? = null
     private lateinit var pressureTextView: TextView
     private lateinit var logoutButton: ImageView
     private val handler = Handler(Looper.getMainLooper())
 
-    // --- Uprawnienia lokalizacji ---
     private val LOCATION_PERMISSIONS = arrayOf(
         android.Manifest.permission.ACCESS_FINE_LOCATION,
         android.Manifest.permission.ACCESS_COARSE_LOCATION
@@ -43,6 +45,10 @@ class main_page : AppCompatActivity(), SensorEventListener {
     private val REQUEST_LOCATION_PERMISSIONS_CODE = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        /**
+         * Initializes the activity: sets up the sensor, UI components, location permissions,
+         * and starts background services.
+         */
         scheduleDailyAlarm()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_page)
@@ -91,11 +97,13 @@ class main_page : AppCompatActivity(), SensorEventListener {
         }
         recyclerView.adapter = adapter
 
-        // Sprawdź i poproś o uprawnienia lokalizacji, potem uruchom serwis
         checkAndRequestLocationPermissions()
     }
 
     private fun scheduleDailyAlarm() {
+        /**
+         * Schedules a daily alarm at 08:30 that triggers [PressureNotificationReceiver].
+         */
         val intent = Intent(this, PressureNotificationReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -120,13 +128,18 @@ class main_page : AppCompatActivity(), SensorEventListener {
 
     }
 
-
     override fun onResume() {
+        /**
+         * Re-registers the pressure sensor listener when the activity resumes.
+         */
         super.onResume()
         sensorManager.registerListener(this, pressureSensor, SensorManager.SENSOR_DELAY_UI)
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
+        /**
+         * Callback for sensor data changes. Updates the pressure reading and stores it locally.
+         */
         if (event?.sensor?.type == Sensor.TYPE_PRESSURE) {
             val pressure = event.values[0]
             val roundedPressure = BigDecimal(pressure.toDouble()).setScale(2, RoundingMode.HALF_UP)
@@ -145,6 +158,9 @@ class main_page : AppCompatActivity(), SensorEventListener {
     }
 
     private fun requestIgnoreBatteryOptimizations() {
+        /**
+         * Requests system to ignore battery optimization for this app (required for background tasks).
+         */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val packageName = packageName
             val pm = getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
@@ -156,20 +172,25 @@ class main_page : AppCompatActivity(), SensorEventListener {
         }
     }
 
-    // --- Kod obsługi uprawnień lokalizacji ---
+
     private fun checkAndRequestLocationPermissions() {
+        /**
+         * Checks location permissions. If granted, starts [PressureService] in foreground.
+         */
         val hasFineLocation = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
         val hasCoarseLocation = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
         if (!hasFineLocation && !hasCoarseLocation) {
             ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS, REQUEST_LOCATION_PERMISSIONS_CODE)
         } else {
-            // Uprawnienia są, uruchamiamy serwis
             startPressureService()
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        /**
+         * Handles location permission result. Starts pressure service if granted.
+         */
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_LOCATION_PERMISSIONS_CODE) {
             if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
@@ -181,6 +202,9 @@ class main_page : AppCompatActivity(), SensorEventListener {
     }
 
     private fun startPressureService() {
+        /**
+         * Starts [PressureService] as a foreground service for continuous pressure monitoring.
+         */
         val intent = Intent(this, PressureService::class.java)
         ContextCompat.startForegroundService(this, intent)
     }

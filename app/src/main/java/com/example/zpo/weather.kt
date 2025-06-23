@@ -32,6 +32,10 @@ import com.github.mikephil.charting.utils.MPPointF
 
 
 class weather : AppCompatActivity() {
+    /**
+     * Activity responsible for displaying the current weather, dominant condition summary,
+     * and historical temperature and humidity data using a line chart.
+     */
 
     private lateinit var imageConditionIcon: ImageView
     private lateinit var textConditionSummary: TextView
@@ -51,6 +55,9 @@ class weather : AppCompatActivity() {
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
+        /**
+         * Called when the activity is first created.
+         */
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather)
 
@@ -76,6 +83,10 @@ class weather : AppCompatActivity() {
     }
 
     private fun fetchDominantCondition() {
+        /**
+         * Fetches the most frequently occurring weather condition for the day from Firestore
+         * and updates the summary text and icon accordingly.
+         */
         val email = userEmail
         if (email == null) {
             Log.e(TAG, "No user is logged in.")
@@ -120,6 +131,9 @@ class weather : AppCompatActivity() {
     }
 
     private fun fetchCurrentWeather() {
+        /**
+         * Fetches the current weather from the OpenWeatherMap API and updates UI.
+         */
         val url =
             "https://api.openweathermap.org/data/2.5/weather?lat=$LATITUDE&lon=$LONGITUDE&appid=$API_KEY&units=metric"
 
@@ -172,6 +186,9 @@ class weather : AppCompatActivity() {
     }
 
     private fun fetchTemperatureData(onComplete: (List<Entry>, List<Entry>) -> Unit) {
+        /**
+         * Retrieves temperature and humidity entries for today's data to plot on chart.
+         */
         val email = userEmail
         if (email == null) {
             Log.e(TAG, "No user is logged in.")
@@ -214,6 +231,9 @@ class weather : AppCompatActivity() {
     }
 
     private fun displayChart(tempEntries: List<Entry>, humidityEntries: List<Entry>) {
+        /**
+         * Displays a line chart with temperature and humidity data.
+         */
         val tempDataSet = LineDataSet(tempEntries, "Temperature (°C)").apply {
             color = Color.RED
             valueTextColor = Color.RED
@@ -253,6 +273,10 @@ class weather : AppCompatActivity() {
     }
 
     private fun convertTimeToHalfHourFloat(docId: String): Float {
+        /**
+         * Converts a document ID timestamp (e.g., "2024-05-30-13:15") into a float representing the
+         * nearest half-hour mark (e.g., 13.0, 13.5, or 14.0).
+         */
         val timePart = docId.takeLast(5)
         val parts = timePart.split(":")
         if (parts.size < 2) {
@@ -275,6 +299,9 @@ class weather : AppCompatActivity() {
     }
 
     class TimeAxisFormatter : ValueFormatter() {
+        /**
+         * Formatter to display time values on the X-axis in HH:mm format.
+         */
         override fun getFormattedValue(value: Float): String {
             val hour = value.toInt()
             val minutes = if (value % 1 == 0f) "00" else "30"
@@ -283,6 +310,9 @@ class weather : AppCompatActivity() {
     }
 
     class CustomMarkerView(context: Context) : MarkerView(context, R.layout.marker_view) {
+        /**
+         * Custom marker view used to display tooltip information on chart points.
+         */
         private val textView: TextView = findViewById(R.id.marker_text)
         private var lastEntryX: Float = -1f
         private var totalEntriesCount: Int = 0
@@ -306,15 +336,13 @@ class weather : AppCompatActivity() {
         }
 
         override fun getOffsetForDrawingAtPoint(posX: Float, posY: Float): MPPointF {
-            // We consider x values increase by 0.5 per entry,
-            // so index = x * 2; last 10 entries means index >= (totalEntriesCount * 2 - 20)
             val index = (lastEntryX * 2).toInt()
 
             return if (totalEntriesCount > 0 && index >= (totalEntriesCount * 2 - 20)) {
-                // Place marker on left for last 10 entries
+                // place marker on left
                 MPPointF(-width.toFloat(), -height / 2f)
             } else {
-                // Default marker position on right
+                // default marker position on right
                 MPPointF(0f, -height / 2f)
             }
         }

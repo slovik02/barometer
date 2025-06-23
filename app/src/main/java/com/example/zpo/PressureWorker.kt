@@ -1,6 +1,5 @@
 package com.example.zpo
 
-
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -23,19 +22,31 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.coroutines.resume
 
-
-
 class PressureWorker(
     context: Context,
     workerParams: WorkerParameters
 ) : CoroutineWorker(context, workerParams) {
-
+    /**
+     * A [CoroutineWorker] that reads atmospheric pressure from the device sensor,
+     * stores it locally, and uploads it to Firestore under the authenticated user's account.
+     *
+     * This worker is designed to run periodically in the background and uses a foreground
+     * notification to comply with Android background execution limits.
+     *
+     * @property CHANNEL_ID the ID of the notification channel used by this worker.
+     */
     companion object {
         private const val TAG = "PressureWorker"
         private const val CHANNEL_ID = "pressure_upload_channel"
     }
 
     override suspend fun doWork(): Result {
+        /**
+         * The main execution method of the worker.
+         * Reads pressure, saves it locally, and uploads to Firestore.
+         *
+         * @return [Result.success] if execution completes, even if no sensor data was available.
+         */
         createNotificationChannelIfNeeded()
         setForeground(createForegroundInfo())
 
@@ -53,6 +64,10 @@ class PressureWorker(
     }
 
     private fun createNotificationChannelIfNeeded() {
+        /**
+         * Creates a notification channel if needed (for Android O and above).
+         * Required for showing foreground service notifications.
+         */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
@@ -65,6 +80,11 @@ class PressureWorker(
     }
 
     private fun createForegroundInfo(): ForegroundInfo {
+        /**
+         * Builds and returns [ForegroundInfo] containing the upload notification.
+         *
+         * @return a [ForegroundInfo] used to keep the worker alive in the foreground.
+         */
         val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setContentTitle("Pressure Upload")
             .setContentText("Uploading atmospheric pressure data...")
@@ -75,6 +95,12 @@ class PressureWorker(
     }
 
     private suspend fun readSensorDirectly(): Float? = suspendCancellableCoroutine { cont ->
+        /**
+         * Reads the pressure sensor once and returns the result.
+         * Uses a suspend coroutine with a timeout fallback.
+         *
+         * @return the current pressure in hPa, or null if not available.
+         */
         val sensorManager = applicationContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val pressureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE)
 
@@ -96,7 +122,6 @@ class PressureWorker(
 
         sensorManager.registerListener(listener, pressureSensor, SensorManager.SENSOR_DELAY_NORMAL)
 
-        // Fallback: timeout in 3 seconds
         Handler(Looper.getMainLooper()).postDelayed({
             sensorManager.unregisterListener(listener)
             if (cont.isActive) cont.resume(null)
@@ -104,6 +129,11 @@ class PressureWorker(
     }
 
     private fun savePressureLocally(pressure: Float) {
+        /**
+         * Saves the latest pressure reading locally using SharedPreferences.
+         *
+         * @param pressure the pressure value in hPa.
+         */
         val prefs = applicationContext.getSharedPreferences("pressure_prefs", Context.MODE_PRIVATE)
         prefs.edit()
             .putFloat("latest_pressure", pressure)
@@ -112,6 +142,12 @@ class PressureWorker(
     }
 
     private fun uploadPressureData(pressure: Float) {
+        /**
+         * Uploads the pressure reading to Firestore under the user's collection.
+         * Document is stored by current date and time as ID.
+         *
+         * @param pressure the pressure value in hPa.
+         */
         Log.d(TAG, "Uploading pressure: $pressure hPa")
 
         val firestore = FirebaseFirestore.getInstance()
@@ -147,6 +183,11 @@ class PressureWorker(
     }
 
     private fun getCurrentFormattedTime(): String {
+        /**
+         * Returns the current time formatted as HH:mm:ss for logs.
+         *
+         * @return the current time string.
+         */
         return SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Calendar.getInstance().time)
     }
 }
