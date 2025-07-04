@@ -62,11 +62,19 @@
             android:foregroundServiceType="location"
             tools:ignore="ForegroundServicePermission" />
 
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-        <receiver android:name=".PressureNotificationReceiver"
-            android:exported="true" />
+
 
     </application>
 

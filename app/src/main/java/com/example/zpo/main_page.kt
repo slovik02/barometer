@@ -2,6 +2,8 @@ package com.example.zpo
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -49,7 +51,6 @@ class main_page : AppCompatActivity(), SensorEventListener {
          * Initializes the activity: sets up the sensor, UI components, location permissions,
          * and starts background services.
          */
-        scheduleDailyAlarm()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_page)
 
@@ -98,35 +99,19 @@ class main_page : AppCompatActivity(), SensorEventListener {
         recyclerView.adapter = adapter
 
         checkAndRequestLocationPermissions()
-    }
 
-    private fun scheduleDailyAlarm() {
-        /**
-         * Schedules a daily alarm at 08:30 that triggers [PressureNotificationReceiver].
-         */
-        val intent = Intent(this, PressureNotificationReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 8)
-            set(Calendar.MINUTE, 30)
-            set(Calendar.SECOND, 0)
-            if (before(Calendar.getInstance())) {
-                add(Calendar.DAY_OF_MONTH, 1)
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "pressure_channel",
+                "Powiadomienia o ciśnieniu",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
         }
 
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            pendingIntent
-        )
-
     }
+
 
     override fun onResume() {
         /**
